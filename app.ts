@@ -139,20 +139,6 @@ export const handler: APIGatewayProxyHandler = async (event, context, callback) 
     if(event.headers['X-Slack-Retry-Num']) {
         return { statusCode: 200, body: "ok" }
     }
-
-    const bodyParams = event.isBase64Encoded ? Buffer.from(event.body, 'base64').toString('utf8') : event.body;
-
-    console.log('bodyParams', bodyParams)
-
-    if (bodyParams && bodyParams['challenge']) {
-        return {
-            statusCode: 200,
-            body: bodyParams['challenge'],
-            isBase64Encoded: false,
-        };
-    }
-
     const handler = await awsLambdaReceiver.start();
-
     return handler(event, context, callback);
 }

@@ -2,6 +2,7 @@ import { APIGatewayProxyHandler } from 'aws-lambda';
 import Slack from '@slack/bolt'
 import { ChatGPTAPI } from "chatgpt";
 import debounce from 'debounce-promise';
+import { parse } from 'querystring';
 
 const api = new ChatGPTAPI({
     apiKey: process.env.OPENAI_API_KEY!,
@@ -138,6 +139,18 @@ export const handler: APIGatewayProxyHandler = async (event, context, callback) 
     if(event.headers['X-Slack-Retry-Num']) {
         return { statusCode: 200, body: "ok" }
     }
+
+    const bodyContent = event.isBase64Encoded ? Buffer.from(event.body, 'base64').toString('utf8') : event.body;
+    const bodyParams = parse(bodyContent);
+
+    if (bodyParams && bodyParams['challenge']) {
+        return {
+            statusCode: 200,
+            body: bodyParams['challenge'],
+            isBase64Encoded: false,
+        };
+    }
+
     const handler = await awsLambdaReceiver.start();
 
     return handler(event, context, callback);

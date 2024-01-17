@@ -139,6 +139,8 @@ export const handler: APIGatewayProxyHandler = async (event, context, callback) 
     if(event.headers['X-Slack-Retry-Num']) {
         return { statusCode: 200, body: "ok" }
     }
+    console.log("Signing token - "+process.env.SLACK_SIGNING_SECRET, process.env.SLACK_BOT_TOKEN)
     const handler = await awsLambdaReceiver.start();
+    console.log('result handler', handler);
     return handler(event, context, callback);
 }

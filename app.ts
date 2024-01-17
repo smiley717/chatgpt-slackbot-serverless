@@ -140,11 +140,7 @@ export const handler: APIGatewayProxyHandler = async (event, context, callback) 
         return { statusCode: 200, body: "ok" }
     }
 
-    const bodyContent = event.isBase64Encoded ? Buffer.from(event.body, 'base64').toString('utf8') : event.body;
-
-    console.log('bodyContent', bodyContent)
-
-    const bodyParams = parse(bodyContent);
+    const bodyParams = event.isBase64Encoded ? Buffer.from(event.body, 'base64').toString('utf8') : event.body;
 
     console.log('bodyParams', bodyParams)
 
